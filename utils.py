@@ -36,7 +36,7 @@ class TextLoader():
         self.vocab = dict(zip(self.chars, range(len(self.chars))))
         with open(vocab_file, 'wb') as f:
             cPickle.dump(self.chars, f)
-        self.tensor = np.array(list(map(self.vocab.get, data)))
+        self.tensor = np.fromiter(map(self.vocab.get, data), dtype='int32', count=len(data))
         np.save(tensor_file, self.tensor)
 
 
