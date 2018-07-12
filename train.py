@@ -109,8 +109,8 @@ def train(args):
         if args.init_from is not None:
             saver.restore(sess, ckpt)
         for e in range(args.num_epochs):
-            sess.run(tf.assign(model.lr,
-                               args.learning_rate * (args.decay_rate ** e)))
+            mylr = args.learning_rate * (args.decay_rate ** e)
+            sess.run(tf.assign(model.lr, mylr))
             data_loader.reset_batch_pointer()
             state = sess.run(model.initial_state)
             for b in range(data_loader.num_batches):
@@ -126,10 +126,10 @@ def train(args):
                 writer.add_summary(summ, e * data_loader.num_batches + b)
 
                 end = time.time()
-                print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}"
+                print("{}/{} (epoch {}), train_loss = {:.3f}, lr = {:.4f}, time/batch = {:.3f}"
                       .format(e * data_loader.num_batches + b,
                               args.num_epochs * data_loader.num_batches,
-                              e, train_loss, end - start))
+                              e, train_loss, mylr, end - start))
                 if (e * data_loader.num_batches + b) % args.save_every == 0\
                         or (e == args.num_epochs-1 and
                             b == data_loader.num_batches-1):
